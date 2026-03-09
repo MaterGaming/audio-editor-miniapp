@@ -3,705 +3,345 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Editor Mini App</title>
+    <title>Audio Editor</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-
         body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background: var(--tg-theme-bg-color, #f5f5f5);
-            color: var(--tg-theme-text-color, #000000);
-            padding: 20px;
-            min-height: 100vh;
+            color: var(--tg-theme-text-color, #000);
+            margin: 0;
+            padding: 16px;
         }
-
         .container {
-            max-width: 600px;
+            max-width: 500px;
             margin: 0 auto;
         }
-
         h1 {
             font-size: 24px;
-            margin-bottom: 20px;
-            color: var(--tg-theme-text-color, #000);
             text-align: center;
+            margin-bottom: 24px;
         }
-
-        .section {
-            background: var(--tg-theme-secondary-bg-color, #ffffff);
+        .card {
+            background: var(--tg-theme-secondary-bg-color, #fff);
             border-radius: 12px;
             padding: 16px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--tg-theme-text-color, #000);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .file-info {
-            background: var(--tg-theme-bg-color, #f0f0f0);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 16px;
-        }
-
-        .file-info p {
-            margin: 4px 0;
-            font-size: 14px;
-            color: var(--tg-theme-hint-color, #666);
-        }
-
-        .button-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .effect-btn, .format-btn, .bitrate-btn, .channels-btn, .samplewidth-btn {
+        .btn {
             background: var(--tg-theme-button-color, #40a7e3);
-            color: var(--tg-theme-button-text-color, #ffffff);
+            color: var(--tg-theme-button-text-color, #fff);
             border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            width: 100%;
-        }
-
-        .effect-btn:hover, .format-btn:hover, .bitrate-btn:hover, .channels-btn:hover, .samplewidth-btn:hover {
-            opacity: 0.8;
-        }
-
-        .effect-btn.active {
-            background: var(--tg-theme-destructive-text-color, #e35b5b);
-        }
-
-        .effect-btn.effect-applied {
-            background: var(--tg-theme-accent-text-color, #4caf50);
-        }
-
-        .input-group {
-            margin-bottom: 16px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 14px;
-            color: var(--tg-theme-text-color, #000);
-        }
-
-        .input-group input, .input-group select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--tg-theme-hint-color, #ddd);
-            border-radius: 8px;
-            background: var(--tg-theme-bg-color, #fff);
-            color: var(--tg-theme-text-color, #000);
-            font-size: 14px;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--tg-theme-button-color, #40a7e3);
-        }
-
-        .range-value {
-            text-align: center;
-            font-size: 16px;
-            font-weight: 600;
-            margin: 8px 0;
-            color: var(--tg-theme-button-color, #40a7e3);
-        }
-
-        .slider-container {
-            padding: 10px 0;
-        }
-
-        .slider {
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: var(--tg-theme-hint-color, #ddd);
-            outline: none;
-            -webkit-appearance: none;
-        }
-
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--tg-theme-button-color, #40a7e3);
-            cursor: pointer;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .button-group button {
-            flex: 1;
-            background: var(--tg-theme-button-color, #40a7e3);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            border: none;
-            padding: 14px;
+            padding: 12px 20px;
             border-radius: 8px;
             font-size: 16px;
             font-weight: 500;
             cursor: pointer;
+            width: 100%;
+            margin-bottom: 8px;
         }
-
-        .button-group button.secondary {
+        .btn.secondary {
             background: var(--tg-theme-secondary-bg-color, #e0e0e0);
             color: var(--tg-theme-text-color, #000);
         }
-
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: var(--tg-theme-hint-color, #ddd);
-            border-radius: 2px;
-            margin: 16px 0;
-            display: none;
-        }
-
-        .progress-bar.active {
-            display: block;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            background: var(--tg-theme-button-color, #40a7e3);
-            border-radius: 2px;
-            width: 0%;
-            transition: width 0.3s;
-        }
-
-        .status-message {
-            text-align: center;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
-            display: none;
-        }
-
-        .status-message.success {
-            background: rgba(76, 175, 80, 0.1);
-            color: #4caf50;
-            display: block;
-        }
-
-        .status-message.error {
-            background: rgba(244, 67, 54, 0.1);
-            color: #f44336;
-            display: block;
-        }
-
-        .status-message.info {
-            background: rgba(33, 150, 243, 0.1);
-            color: #2196f3;
-            display: block;
-        }
-
         .hidden {
             display: none;
         }
-
-        .loading {
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
             text-align: center;
-            padding: 20px;
         }
-
-        .loading-spinner {
-            border: 3px solid var(--tg-theme-hint-color, #f3f3f3);
-            border-top: 3px solid var(--tg-theme-button-color, #40a7e3);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
+        .status.success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
         }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .status.error {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+        .file-info {
+            background: rgba(0,0,0,0.05);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+        .row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .row .btn {
+            margin: 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎵 Audio Editor Pro</h1>
+        <h1>🎵 Audio Editor</h1>
         
-        <!-- Статус файла -->
-        <div class="section" id="file-info-section">
-            <div class="section-title">
-                <span>📁 Текущий файл</span>
+        <!-- Информация о файле -->
+        <div class="card" id="fileCard">
+            <div class="file-info" id="fileInfo">
+                <strong>📁 Файл не загружен</strong>
+                <p id="fileDetails" style="margin: 8px 0 0; font-size: 14px;"></p>
             </div>
-            <div class="file-info">
-                <p id="filename">Файл не загружен</p>
-                <p id="file-details"></p>
-            </div>
-            <button class="effect-btn" id="select-file" style="background: var(--tg-theme-button-color);">📤 Выбрать файл в Telegram</button>
+            <button class="btn" id="selectFileBtn">📤 Выбрать файл в Telegram</button>
         </div>
 
-        <!-- Эффекты (скрыты пока нет файла) -->
-        <div class="section hidden" id="effects-section">
-            <div class="section-title">
-                <span>🎛️ Эффекты</span>
-            </div>
+        <!-- Эффекты -->
+        <div class="card hidden" id="effectsCard">
+            <h3>🎛️ Эффекты</h3>
             
-            <div class="button-grid" id="effects-grid">
-                <button class="effect-btn" data-effect="volume">🔊 Громкость</button>
-                <button class="effect-btn" data-effect="speed">⏩ Скорость</button>
-                <button class="effect-btn" data-effect="samplerate">🎚️ Sample Rate</button>
-                <button class="effect-btn" data-effect="cut">✂️ Обрезка</button>
+            <div class="row">
+                <button class="btn secondary" data-effect="volume">🔊 Громкость</button>
+                <button class="btn secondary" data-effect="speed">⏩ Скорость</button>
+            </div>
+            <div class="row">
+                <button class="btn secondary" data-effect="samplerate">🎚️ Sample Rate</button>
+                <button class="btn secondary" data-effect="cut">✂️ Обрезка</button>
             </div>
 
-            <div id="effect-controls" class="hidden">
-                <div id="volume-control" class="hidden">
-                    <label>Изменение громкости (dB)</label>
-                    <div class="range-value" id="volume-value">0 dB</div>
-                    <div class="slider-container">
-                        <input type="range" class="slider" id="volume-slider" min="-20" max="20" value="0" step="0.5">
-                    </div>
-                    <div class="input-group">
-                        <input type="number" id="volume-input" value="0" step="0.5" min="-20" max="20">
-                    </div>
-                </div>
-
-                <div id="speed-control" class="hidden">
-                    <label>Коэффициент скорости</label>
-                    <div class="range-value" id="speed-value">1.0x</div>
-                    <div class="slider-container">
-                        <input type="range" class="slider" id="speed-slider" min="0.5" max="2.0" value="1.0" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <input type="number" id="speed-input" value="1.0" step="0.1" min="0.5" max="2.0">
-                    </div>
-                </div>
-
-                <div id="samplerate-control" class="hidden">
-                    <div class="input-group">
-                        <label>Частота дискретизации (Hz)</label>
-                        <select id="samplerate-select">
-                            <option value="8000">8 kHz</option>
-                            <option value="11025">11.025 kHz</option>
-                            <option value="16000">16 kHz</option>
-                            <option value="22050">22.05 kHz</option>
-                            <option value="32000">32 kHz</option>
-                            <option value="44100" selected>44.1 kHz</option>
-                            <option value="48000">48 kHz</option>
-                            <option value="88200">88.2 kHz</option>
-                            <option value="96000">96 kHz</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div id="cut-control" class="hidden">
-                    <div class="input-group">
-                        <label>Начало (секунды или мс)</label>
-                        <input type="text" id="cut-start" placeholder="например: 5 или 5s">
-                    </div>
-                    <div class="input-group">
-                        <label>Конец (секунды или мс)</label>
-                        <input type="text" id="cut-end" placeholder="например: 30 или 30s">
-                    </div>
-                </div>
-
-                <button class="effect-btn" id="apply-effect" style="margin-top: 16px; background: #4caf50;">✅ Применить эффект</button>
+            <!-- Контролы для эффектов -->
+            <div id="volumeControl" class="hidden">
+                <label>Громкость (dB):</label>
+                <input type="number" id="volumeValue" value="0" step="0.5" min="-20" max="20">
             </div>
+
+            <div id="speedControl" class="hidden">
+                <label>Скорость (0.5 - 2.0):</label>
+                <input type="number" id="speedValue" value="1.0" step="0.1" min="0.5" max="2.0">
+            </div>
+
+            <div id="samplerateControl" class="hidden">
+                <label>Частота дискретизации:</label>
+                <select id="samplerateValue">
+                    <option value="8000">8 kHz</option>
+                    <option value="16000">16 kHz</option>
+                    <option value="22050">22.05 kHz</option>
+                    <option value="44100" selected>44.1 kHz</option>
+                    <option value="48000">48 kHz</option>
+                </select>
+            </div>
+
+            <div id="cutControl" class="hidden">
+                <input type="text" id="cutStart" placeholder="Начало (сек или мс) например: 5">
+                <input type="text" id="cutEnd" placeholder="Конец (сек или мс) например: 30">
+            </div>
+
+            <button class="btn" id="applyEffectBtn" style="margin-top: 16px;">✅ Применить эффект</button>
         </div>
 
-        <!-- Экспорт (скрыт пока нет файла) -->
-        <div class="section hidden" id="export-section">
-            <div class="section-title">
-                <span>💾 Экспорт</span>
+        <!-- Экспорт -->
+        <div class="card hidden" id="exportCard">
+            <h3>💾 Экспорт</h3>
+            
+            <div class="row">
+                <button class="btn secondary" data-format="wav">WAV</button>
+                <button class="btn secondary" data-format="mp3">MP3</button>
+                <button class="btn secondary" data-format="ogg">OGG</button>
             </div>
 
-            <div class="button-grid" id="format-grid">
-                <button class="format-btn" data-format="wav">WAV</button>
-                <button class="format-btn" data-format="mp3">MP3</button>
-                <button class="format-btn" data-format="ogg">OGG</button>
+            <div id="bitrateControl" class="hidden">
+                <label>Битрейт:</label>
+                <select id="bitrateValue">
+                    <option value="original">Как у оригинала</option>
+                    <option value="64k">64 kbps</option>
+                    <option value="128k">128 kbps</option>
+                    <option value="192k">192 kbps</option>
+                    <option value="320k">320 kbps</option>
+                </select>
             </div>
 
-            <div id="bitrate-control" class="hidden">
-                <div class="input-group">
-                    <label>Битрейт (для MP3/OGG)</label>
-                    <select id="bitrate-select">
-                        <option value="original">Как у оригинала</option>
-                        <option value="64k">64 kbps</option>
-                        <option value="128k">128 kbps</option>
-                        <option value="192k">192 kbps</option>
-                        <option value="256k">256 kbps</option>
-                        <option value="320k">320 kbps</option>
-                    </select>
-                </div>
-            </div>
+            <label>Каналы:</label>
+            <select id="channelsValue">
+                <option value="original">Как у оригинала</option>
+                <option value="1">Моно</option>
+                <option value="2">Стерео</option>
+            </select>
 
-            <div class="button-grid" style="grid-template-columns: repeat(2, 1fr); margin-top: 16px;">
-                <button class="channels-btn" data-channels="original">🔊 Каналы: оригинал</button>
-                <button class="channels-btn" data-channels="1">🎧 Каналы: моно</button>
-                <button class="channels-btn" data-channels="2">🎵 Каналы: стерео</button>
-            </div>
+            <label>Разрядность:</label>
+            <select id="samplewidthValue">
+                <option value="original">Как у оригинала</option>
+                <option value="1">8 бит</option>
+                <option value="2">16 бит</option>
+                <option value="3">24 бит</option>
+            </select>
 
-            <div class="button-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 16px;">
-                <button class="samplewidth-btn" data-samplewidth="original">📊 8 бит (ориг)</button>
-                <button class="samplewidth-btn" data-samplewidth="1">📊 8 бит</button>
-                <button class="samplewidth-btn" data-samplewidth="2">📊 16 бит</button>
-                <button class="samplewidth-btn" data-samplewidth="3">📊 24 бит</button>
-                <button class="samplewidth-btn" data-samplewidth="4">📊 32 бит</button>
-            </div>
-
-            <button class="effect-btn" id="export-btn" style="margin-top: 20px; background: #ff9800;">💾 Экспортировать аудио</button>
+            <button class="btn" id="exportBtn" style="margin-top: 16px; background: #4caf50;">💾 Экспортировать</button>
         </div>
-
-        <!-- Прогресс -->
-        <div class="progress-bar" id="progress-bar">
-            <div class="progress-bar-fill" id="progress-fill"></div>
-        </div>
-
-        <!-- Статус сообщения -->
-        <div class="status-message" id="status-message"></div>
 
         <!-- Кнопки управления -->
-        <div class="button-group">
-            <button id="reset-btn" class="secondary">🔄 Сбросить сессию</button>
-            <button id="close-btn">❌ Закрыть</button>
+        <div class="row">
+            <button class="btn secondary" id="resetBtn">🔄 Сбросить</button>
+            <button class="btn secondary" id="closeBtn">❌ Закрыть</button>
         </div>
+
+        <!-- Статус -->
+        <div id="status" class="status"></div>
     </div>
 
     <script>
-        // Инициализация Telegram Web App
-        let tg = window.Telegram.WebApp;
-        let userId = tg.initDataUnsafe?.user?.id;
-        
-        // Состояние приложения
-        let currentEffect = null;
-        let selectedFormat = null;
-        let selectedBitrate = 'original';
-        let selectedChannels = 'original';
-        let selectedSampleWidth = 'original';
-        let hasFile = false;
-
-        // Расширяем на весь экран
+        const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
 
-        // Элементы DOM
-        const elements = {
-            fileInfoSection: document.getElementById('file-info-section'),
-            effectsSection: document.getElementById('effects-section'),
-            exportSection: document.getElementById('export-section'),
-            effectControls: document.getElementById('effect-controls'),
-            statusMessage: document.getElementById('status-message'),
-            progressBar: document.getElementById('progress-bar'),
-            progressFill: document.getElementById('progress-fill'),
-            filename: document.getElementById('filename'),
-            fileDetails: document.getElementById('file-details'),
-            
-            volumeControl: document.getElementById('volume-control'),
-            speedControl: document.getElementById('speed-control'),
-            samplerateControl: document.getElementById('samplerate-control'),
-            cutControl: document.getElementById('cut-control'),
-            
-            volumeSlider: document.getElementById('volume-slider'),
-            volumeInput: document.getElementById('volume-input'),
-            volumeValue: document.getElementById('volume-value'),
-            
-            speedSlider: document.getElementById('speed-slider'),
-            speedInput: document.getElementById('speed-input'),
-            speedValue: document.getElementById('speed-value'),
-            
-            samplerateSelect: document.getElementById('samplerate-select'),
-            cutStart: document.getElementById('cut-start'),
-            cutEnd: document.getElementById('cut-end'),
-            
-            bitrateControl: document.getElementById('bitrate-control'),
-            bitrateSelect: document.getElementById('bitrate-select')
-        };
+        // Состояние
+        let currentEffect = null;
+        let selectedFormat = null;
+        let hasFile = false;
 
-        // Функция отправки данных в бота
+        // Элементы
+        const fileInfo = document.getElementById('fileInfo');
+        const fileDetails = document.getElementById('fileDetails');
+        const effectsCard = document.getElementById('effectsCard');
+        const exportCard = document.getElementById('exportCard');
+        const status = document.getElementById('status');
+
+        // Отправка данных в бота
         function sendToBot(action, data = {}) {
-            const message = {
+            const message = JSON.stringify({
                 action: action,
                 ...data
-            };
-            tg.sendData(JSON.stringify(message));
-            showProgress();
-            showStatus('info', 'Отправка запроса...');
+            });
+            tg.sendData(message);
+            showStatus('info', 'Запрос отправлен...');
         }
 
-        // Показать статус
-        function showStatus(type, message) {
-            elements.statusMessage.className = 'status-message ' + type;
-            elements.statusMessage.textContent = message;
-            
+        function showStatus(type, text) {
+            status.className = 'status ' + type;
+            status.textContent = text;
             setTimeout(() => {
-                elements.statusMessage.className = 'status-message';
+                status.className = 'status';
+                status.textContent = '';
             }, 3000);
         }
 
-        // Показать прогресс
-        function showProgress() {
-            elements.progressBar.classList.add('active');
-            let width = 0;
-            const interval = setInterval(() => {
-                if (width >= 90) {
-                    clearInterval(interval);
-                } else {
-                    width += 10;
-                    elements.progressFill.style.width = width + '%';
-                }
-            }, 200);
-            
-            // Сбрасываем через 5 секунд
-            setTimeout(() => {
-                clearInterval(interval);
-                elements.progressBar.classList.remove('active');
-                elements.progressFill.style.width = '0%';
-            }, 5000);
-        }
-
-        // Загрузка файла
-        document.getElementById('select-file').addEventListener('click', () => {
+        // Выбор файла
+        document.getElementById('selectFileBtn').addEventListener('click', () => {
             sendToBot('select_file');
-            showStatus('info', 'Запрос отправлен! Отправьте аудиофайл в чат.');
+            showStatus('info', 'Отправьте аудиофайл в чат');
         });
 
-        // Кнопки эффектов
-        document.querySelectorAll('.effect-btn[data-effect]').forEach(btn => {
+        // Эффекты
+        document.querySelectorAll('[data-effect]').forEach(btn => {
             btn.addEventListener('click', () => {
-                const effect = btn.dataset.effect;
-                currentEffect = effect;
-                
-                // Визуальное выделение
-                document.querySelectorAll('.effect-btn[data-effect]').forEach(b => {
-                    b.classList.remove('active');
-                });
-                btn.classList.add('active');
+                currentEffect = btn.dataset.effect;
                 
                 // Скрываем все контролы
-                elements.volumeControl.classList.add('hidden');
-                elements.speedControl.classList.add('hidden');
-                elements.samplerateControl.classList.add('hidden');
-                elements.cutControl.classList.add('hidden');
+                document.getElementById('volumeControl').classList.add('hidden');
+                document.getElementById('speedControl').classList.add('hidden');
+                document.getElementById('samplerateControl').classList.add('hidden');
+                document.getElementById('cutControl').classList.add('hidden');
                 
                 // Показываем нужный
-                switch(effect) {
-                    case 'volume':
-                        elements.volumeControl.classList.remove('hidden');
-                        break;
-                    case 'speed':
-                        elements.speedControl.classList.remove('hidden');
-                        break;
-                    case 'samplerate':
-                        elements.samplerateControl.classList.remove('hidden');
-                        break;
-                    case 'cut':
-                        elements.cutControl.classList.remove('hidden');
-                        break;
-                }
-                
-                elements.effectControls.classList.remove('hidden');
+                document.getElementById(currentEffect + 'Control').classList.remove('hidden');
             });
         });
 
-        // Применение эффекта
-        document.getElementById('apply-effect').addEventListener('click', () => {
+        // Применить эффект
+        document.getElementById('applyEffectBtn').addEventListener('click', () => {
             if (!currentEffect) {
-                showStatus('error', 'Сначала выберите эффект');
+                showStatus('error', 'Выберите эффект');
                 return;
             }
-            
             if (!hasFile) {
                 showStatus('error', 'Сначала загрузите файл');
                 return;
             }
-            
+
             let value = '';
             switch(currentEffect) {
                 case 'volume':
-                    value = elements.volumeInput.value;
+                    value = document.getElementById('volumeValue').value;
                     break;
                 case 'speed':
-                    value = elements.speedInput.value;
+                    value = document.getElementById('speedValue').value;
                     break;
                 case 'samplerate':
-                    value = elements.samplerateSelect.value;
+                    value = document.getElementById('samplerateValue').value;
                     break;
                 case 'cut':
-                    value = `${elements.cutStart.value} ${elements.cutEnd.value}`;
-                    if (!elements.cutStart.value || !elements.cutEnd.value) {
-                        showStatus('error', 'Введите начало и конец обрезки');
-                        return;
-                    }
+                    value = document.getElementById('cutStart').value + ' ' + document.getElementById('cutEnd').value;
                     break;
             }
-            
-            sendToBot('apply_effect', {
-                effect: currentEffect,
-                value: value
-            });
+
+            sendToBot('apply_effect', { effect: currentEffect, value: value });
         });
 
-        // Форматы
-        document.querySelectorAll('.format-btn').forEach(btn => {
+        // Выбор формата
+        document.querySelectorAll('[data-format]').forEach(btn => {
             btn.addEventListener('click', () => {
                 selectedFormat = btn.dataset.format;
                 
-                document.querySelectorAll('.format-btn').forEach(b => {
-                    b.style.opacity = '0.5';
-                });
-                btn.style.opacity = '1';
-                
+                // Показываем битрейт только для mp3/ogg
                 if (selectedFormat === 'mp3' || selectedFormat === 'ogg') {
-                    elements.bitrateControl.classList.remove('hidden');
+                    document.getElementById('bitrateControl').classList.remove('hidden');
                 } else {
-                    elements.bitrateControl.classList.add('hidden');
+                    document.getElementById('bitrateControl').classList.add('hidden');
                 }
                 
                 showStatus('info', `Выбран формат: ${selectedFormat.toUpperCase()}`);
             });
         });
 
-        // Каналы
-        document.querySelectorAll('.channels-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                selectedChannels = btn.dataset.channels;
-                
-                document.querySelectorAll('.channels-btn').forEach(b => {
-                    b.style.opacity = '0.5';
-                });
-                btn.style.opacity = '1';
-            });
-        });
-
-        // Sample width
-        document.querySelectorAll('.samplewidth-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                selectedSampleWidth = btn.dataset.samplewidth;
-                
-                document.querySelectorAll('.samplewidth-btn').forEach(b => {
-                    b.style.opacity = '0.5';
-                });
-                btn.style.opacity = '1';
-            });
-        });
-
         // Экспорт
-        document.getElementById('export-btn').addEventListener('click', () => {
+        document.getElementById('exportBtn').addEventListener('click', () => {
             if (!hasFile) {
                 showStatus('error', 'Сначала загрузите файл');
                 return;
             }
-            
             if (!selectedFormat) {
-                showStatus('error', 'Выберите формат экспорта');
+                showStatus('error', 'Выберите формат');
                 return;
             }
-            
+
             sendToBot('export', {
                 format: selectedFormat,
-                bitrate: selectedBitrate,
-                channels: selectedChannels,
-                samplewidth: selectedSampleWidth
+                bitrate: document.getElementById('bitrateValue').value,
+                channels: document.getElementById('channelsValue').value,
+                samplewidth: document.getElementById('samplewidthValue').value
             });
         });
 
         // Сброс
-        document.getElementById('reset-btn').addEventListener('click', () => {
+        document.getElementById('resetBtn').addEventListener('click', () => {
             sendToBot('reset');
             hasFile = false;
-            elements.filename.textContent = 'Файл не загружен';
-            elements.fileDetails.textContent = '';
-            elements.effectsSection.classList.add('hidden');
-            elements.exportSection.classList.add('hidden');
+            fileInfo.innerHTML = '<strong>📁 Файл не загружен</strong>';
+            fileDetails.textContent = '';
+            effectsCard.classList.add('hidden');
+            exportCard.classList.add('hidden');
         });
 
         // Закрыть
-        document.getElementById('close-btn').addEventListener('click', () => {
+        document.getElementById('closeBtn').addEventListener('click', () => {
             tg.close();
         });
 
-        // Обработка ползунков
-        elements.volumeSlider.addEventListener('input', (e) => {
-            const val = e.target.value;
-            elements.volumeInput.value = val;
-            elements.volumeValue.textContent = val + ' dB';
-        });
-
-        elements.volumeInput.addEventListener('input', (e) => {
-            const val = e.target.value;
-            elements.volumeSlider.value = val;
-            elements.volumeValue.textContent = val + ' dB';
-        });
-
-        elements.speedSlider.addEventListener('input', (e) => {
-            const val = e.target.value;
-            elements.speedInput.value = val;
-            elements.speedValue.textContent = val + 'x';
-        });
-
-        elements.speedInput.addEventListener('input', (e) => {
-            const val = e.target.value;
-            elements.speedSlider.value = val;
-            elements.speedValue.textContent = val + 'x';
-        });
-
-        // Битрейт
-        elements.bitrateSelect.addEventListener('change', (e) => {
-            selectedBitrate = e.target.value;
-        });
-
-        // Получение данных от бота (через главное окно)
-        tg.onEvent('mainButtonClicked', () => {
-            tg.close();
-        });
-
-        // Эмуляция получения данных о файле (для теста)
-        // В реальности бот должен отправлять эти данные
+        // Слушаем сообщения от бота (для теста)
         window.addEventListener('message', (event) => {
             if (event.data && event.data.action === 'file_loaded') {
                 hasFile = true;
-                elements.filename.textContent = event.data.filename || 'audio_file';
-                elements.fileDetails.textContent = event.data.details || 'Аудиофайл загружен';
-                elements.effectsSection.classList.remove('hidden');
-                elements.exportSection.classList.remove('hidden');
-                showStatus('success', 'Файл успешно загружен!');
-                elements.progressBar.classList.remove('active');
+                fileInfo.innerHTML = '<strong>📁 Файл загружен:</strong> ' + event.data.filename;
+                fileDetails.textContent = event.data.details;
+                effectsCard.classList.remove('hidden');
+                exportCard.classList.remove('hidden');
+                showStatus('success', 'Файл загружен!');
             }
         });
 
-        // Принудительно показываем секции для теста (можно убрать позже)
-        // Раскомментируйте для тестирования интерфейса без файла:
-        // setTimeout(() => {
-        //     hasFile = true;
-        //     elements.filename.textContent = 'test_audio.mp3';
-        //     elements.fileDetails.textContent = 'MP3, 44.1kHz, 128kbps';
-        //     elements.effectsSection.classList.remove('hidden');
-        //     elements.exportSection.classList.remove('hidden');
-        // }, 1000);
-
-        console.log('Mini App загружен!');
     </script>
 </body>
 </html>
